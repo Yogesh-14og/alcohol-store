@@ -26,6 +26,8 @@ class ProductFactory extends Factory
             'name' => $name,
             'slug' => Str::slug($name),
             'price' => fake()->randomFloat(2, 10, 500),
+            'cost_price' => fake()->randomFloat(2, 5, 250),
+            'stock_quantity' => fake()->numberBetween(5, 30),
             'volume' => fake()->randomElement(['500ml', '750ml', '1L', '1.5L']),
             'abv' => fake()->randomFloat(1, 0, 50),
             'image' => null,

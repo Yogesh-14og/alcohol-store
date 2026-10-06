@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Khanal Liqour - Alcohol Delivery in Kathmandu')
+@section('title', 'Khanal Liquor - Alcohol Delivery in Kathmandu')
+@section('meta_description', 'Browse Khanal Liquor’s online selection of whiskey, beer, wine, vodka and rum. View product details, prices and availability.')
+@section('og_image', asset('images/hero-banner.jpg'))
 
 @section('content')
 
@@ -13,6 +15,7 @@
 
             <!-- Left: Text Content -->
             <div class="hero-text">
+                <p class="storefront-kicker"><i class="bi bi-stars me-2" aria-hidden="true"></i>KATHMANDU'S BOTTLE SHOP</p>
                 <h1 class="hero-title">
                     Premium Drinks<br>
                     <span class="text-warning-custom">Delivered Fast.</span>
@@ -22,12 +25,17 @@
                     Whiskey, Beer, Wine, Vodka, Rum — all at your doorstep.
                 </p>
                 <div class="hero-buttons mt-4">
-                    <a href="/products" class="btn btn-warning btn-lg px-4 me-2 fw-bold text-dark border-0">
+                    <a href="{{ route('products.index') }}" class="btn btn-warning btn-lg px-4 me-2 fw-bold text-dark border-0">
                         Shop All Drinks →
                     </a>
                     <a href="#offers" class="btn btn-outline-light btn-lg px-4 fw-medium border-2">
                         Special Deals
                     </a>
+                </div>
+                <div class="storefront-trust mt-4">
+                    <span><i class="bi bi-check-circle me-1" aria-hidden="true"></i>Carefully selected</span>
+                    <span><i class="bi bi-truck me-1" aria-hidden="true"></i>Kathmandu delivery</span>
+                    <span><i class="bi bi-shield-check me-1" aria-hidden="true"></i>Secure checkout</span>
                 </div>
             </div>
 
@@ -38,10 +46,10 @@
 </section>
 
 {{-- Shop by Category (Horizontal scroll) --}}
-<section class="py-4 bg-light">
+<section class="storefront-category-section py-4 bg-light">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="fw-bold mb-0">
+            <h3 class="storefront-section-title fw-bold mb-0">
                 Shop by Category 
                 <span class="text-muted fs-6">({{ $categories->count() }})</span>
             </h3>
@@ -50,7 +58,7 @@
         
         <div class="category-scroll">
             @foreach($categories as $cat)
-                <a href="/category/{{ $cat->slug }}" class="category-card">
+                <a href="{{ route('categories.show', $cat->slug ?: $cat->id) }}" class="category-card">
                     <div class="category-icon-wrapper">
                         <img src="{{ asset($cat->image) }}" 
                              alt="{{ $cat->name }}" 
@@ -71,8 +79,8 @@
 <section class="py-4 bg-white">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-1">
-            <h3 class="fw-bold mb-0">Best Sellers</h3>
-            <a href="/products" class="text-decoration-none">View All →</a>
+            <h3 class="storefront-section-title fw-bold mb-0">Best Sellers</h3>
+            <a href="{{ route('products.index') }}" class="text-decoration-none">View All →</a>
         </div>
         
         <div class="row g-4">
@@ -84,17 +92,29 @@
                                  alt="{{ $product->name }}" 
                                  class="product-img"
                                  onerror="this.src='https://placehold.co/120x180/f8f9fa/888?text=Bottle'">
-                            <span class="stock-badge">In Stock</span>
+                            <span class="stock-badge {{ $product->available_stock < 1 ? 'stock-badge-out' : '' }}">
+                                {{ $product->available_stock > 0 ? $product->available_stock.' in stock' : 'Out of stock' }}
+                            </span>
+                            @if ($product->abv)
+                                <span class="product-abv-badge"><i class="bi bi-cup-straw me-1" aria-hidden="true"></i>{{ $product->abv }} ABV</span>
+                            @endif
                         </div>
                         <div class="product-body">
                             <small class="text-muted">{{ $product->category->name ?? 'Liquor' }}</small>
-                            <h6 class="product-name">{{ $product->name }}</h6>
-                            <p class="product-meta">
-                                {{ $product->volume }} • {{ $product->abv }} ABV
-                            </p>
+                            <h6 class="product-name"><a class="text-reset text-decoration-none" href="{{ route('products.show', $product->slug ?: $product->id) }}">{{ $product->name }}</a></h6>
+                            <p class="product-meta">{{ $product->volume ?: 'Bottle' }}</p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="product-price">NPR {{ number_format($product->price) }}</span>
-                                <button class="btn btn-dark btn-sm">Add</button>
+                                @if ($product->available_stock < 1)
+                                    <button class="btn btn-secondary btn-sm" type="button" disabled>Out of stock</button>
+                                @elseif (auth()->check())
+                                    <form action="{{ route('cart.items.store', $product) }}" method="POST">
+                                        @csrf
+                                        <button class="btn btn-dark btn-sm" type="submit">Add</button>
+                                    </form>
+                                @else
+                                    <a class="btn btn-dark btn-sm" href="{{ route('login') }}">Sign in to add</a>
+                                @endauth
                             </div>
                         </div>
                     </div>
@@ -108,8 +128,8 @@
 <section class="py-4 bg-white">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-1">
-            <h3 class="fw-bold mb-0">New Arrivals</h3>
-            <a href="/products" class="text-decoration-none">View All →</a>
+            <h3 class="storefront-section-title fw-bold mb-0">New Arrivals</h3>
+            <a href="{{ route('products.new-arrivals') }}" class="text-decoration-none">View All →</a>
         </div>
         
         <div class="row g-4">
@@ -121,17 +141,29 @@
                                  alt="{{ $product->name }}" 
                                  class="product-img"
                                  onerror="this.src='https://placehold.co/120x180/f8f9fa/888?text=Bottle'">
-                            <span class="stock-badge">In Stock</span>
+                            <span class="stock-badge {{ $product->available_stock < 1 ? 'stock-badge-out' : '' }}">
+                                {{ $product->available_stock > 0 ? $product->available_stock.' in stock' : 'Out of stock' }}
+                            </span>
+                            @if ($product->abv)
+                                <span class="product-abv-badge"><i class="bi bi-cup-straw me-1" aria-hidden="true"></i>{{ $product->abv }} ABV</span>
+                            @endif
                         </div>
                         <div class="product-body">
                             <small class="text-muted">{{ $product->category->name ?? 'Liquor' }}</small>
-                            <h6 class="product-name">{{ $product->name }}</h6>
-                            <p class="product-meta">
-                                {{ $product->volume }} • {{ $product->abv }} ABV
-                            </p>
+                            <h6 class="product-name"><a class="text-reset text-decoration-none" href="{{ route('products.show', $product->slug ?: $product->id) }}">{{ $product->name }}</a></h6>
+                            <p class="product-meta">{{ $product->volume ?: 'Bottle' }}</p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="product-price">NPR {{ number_format($product->price) }}</span>
-                                <button class="btn btn-dark btn-sm">Add</button>
+                                @if ($product->available_stock < 1)
+                                    <button class="btn btn-secondary btn-sm" type="button" disabled>Out of stock</button>
+                                @elseif (auth()->check())
+                                    <form action="{{ route('cart.items.store', $product) }}" method="POST">
+                                        @csrf
+                                        <button class="btn btn-dark btn-sm" type="submit">Add</button>
+                                    </form>
+                                @else
+                                    <a class="btn btn-dark btn-sm" href="{{ route('login') }}">Sign in to add</a>
+                                @endauth
                             </div>
                         </div>
                     </div>
@@ -145,8 +177,8 @@
 <section class="py-4 bg-white">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-1">
-            <h3 class="fw-bold mb-0">Hot Deals</h3>
-            <a href="/products" class="text-decoration-none">View All →</a>
+            <h3 class="storefront-section-title fw-bold mb-0">Hot Deals</h3>
+            <a href="{{ route('products.index') }}" class="text-decoration-none">View All →</a>
         </div>
         
         <div class="row g-4">
@@ -158,17 +190,29 @@
                                  alt="{{ $product->name }}" 
                                  class="product-img"
                                  onerror="this.src='https://placehold.co/120x180/f8f9fa/888?text=Bottle'">
-                            <span class="stock-badge">In Stock</span>
+                            <span class="stock-badge {{ $product->available_stock < 1 ? 'stock-badge-out' : '' }}">
+                                {{ $product->available_stock > 0 ? $product->available_stock.' in stock' : 'Out of stock' }}
+                            </span>
+                            @if ($product->abv)
+                                <span class="product-abv-badge"><i class="bi bi-cup-straw me-1" aria-hidden="true"></i>{{ $product->abv }} ABV</span>
+                            @endif
                         </div>
                         <div class="product-body">
                             <small class="text-muted">{{ $product->category->name ?? 'Liquor' }}</small>
-                            <h6 class="product-name">{{ $product->name }}</h6>
-                            <p class="product-meta">
-                                {{ $product->volume }} • {{ $product->abv }} ABV
-                            </p>
+                            <h6 class="product-name"><a class="text-reset text-decoration-none" href="{{ route('products.show', $product->slug ?: $product->id) }}">{{ $product->name }}</a></h6>
+                            <p class="product-meta">{{ $product->volume ?: 'Bottle' }}</p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="product-price">NPR {{ number_format($product->price) }}</span>
-                                <button class="btn btn-dark btn-sm">Add</button>
+                                @if ($product->available_stock < 1)
+                                    <button class="btn btn-secondary btn-sm" type="button" disabled>Out of stock</button>
+                                @elseif (auth()->check())
+                                    <form action="{{ route('cart.items.store', $product) }}" method="POST">
+                                        @csrf
+                                        <button class="btn btn-dark btn-sm" type="submit">Add</button>
+                                    </form>
+                                @else
+                                    <a class="btn btn-dark btn-sm" href="{{ route('login') }}">Sign in to add</a>
+                                @endauth
                             </div>
                         </div>
                     </div>
@@ -180,7 +224,7 @@
 {{-- Brand Showcase --}}
 <section class="py-5">
     <div class="container">
-        <h3 class="fw-bold text-center mb-4">Trusted Brands</h3>
+        <h3 class="storefront-section-title storefront-section-title-centered fw-bold text-center mb-4">Trusted Brands</h3>
         <div class="row g-3 text-center">
             @php
                 $brands = [
@@ -235,7 +279,7 @@
                                 </a>
                             </div>
                             <div class="col-6">
-                                <a href="/products" class="text-decoration-none text-dark d-block p-2 rounded bg-white border-sm text-center fw-medium">
+                                <a href="{{ route('products.index') }}" class="text-decoration-none text-dark d-block p-2 rounded bg-white border-sm text-center fw-medium">
                                     All Products
                                 </a>
                             </div>
@@ -251,7 +295,7 @@
         </div>
     </div>
 </section>
-<section class="py-5 bg-amber-400">
+<section class="storefront-footer py-4">
     <div class="container text-center">
         <p>@2024 Khanal Liquor. All rights reserved.</p>
     </div>
@@ -403,18 +447,16 @@
 }
 .product-image {
     background: #f8f9fa;
-    padding: 1.5rem;
-    text-align: center;
     position: relative;
-    height: 200px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    height: 170px;
+    overflow: hidden;
 }
 .product-img {
-    max-height: 100%;
-    max-width: 100%;
+    display: block;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
+    object-position: center;
 }
 .stock-badge {
     position: absolute;
@@ -427,8 +469,12 @@
     font-size: 0.75rem;
     font-weight: 600;
 }
+.stock-badge-out {
+    background: #fee2e2;
+    color: #991b1b;
+}
 .product-body {
-    padding: 1rem;
+    padding: 0.875rem;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -441,12 +487,12 @@
 .product-meta {
     font-size: 0.85rem;
     color: #6b7280;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
 }
 .product-price {
     font-weight: 700;
     color: #f59e0b;
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
 
 /* Brand Card */
@@ -464,6 +510,12 @@
 
 /* Mobile */
 @media (max-width: 768px) {
+    .product-image {
+        height: 150px;
+    }
+    .product-body {
+        padding: 0.75rem;
+    }
     .hero-inner {
         flex-direction: column;
         align-items: flex-start;

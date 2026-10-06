@@ -14,9 +14,9 @@ class HomeController extends Controller
     public function index(): Renderable
     {
         $categories = Category::withCount('products')->get();
-        $bestSellers = Product::with('category')->where('is_best_seller', true)->take(8)->get();
-        $newArrivals = Product::with('category')->where('is_new_arrival', true)->latest()->take(8)->get();
-        $hotDeals = Product::with('category')->where('is_hot_deal', true)->take(8)->get();
+        $bestSellers = Product::with('category')->withAvailableStock()->where('is_best_seller', true)->take(8)->get();
+        $newArrivals = Product::with('category')->withAvailableStock()->where('is_new_arrival', true)->latest()->take(8)->get();
+        $hotDeals = Product::with('category')->withAvailableStock()->where('is_hot_deal', true)->take(8)->get();
 
         return view('home', compact('categories', 'bestSellers', 'newArrivals', 'hotDeals'));
     }

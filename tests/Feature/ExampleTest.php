@@ -16,4 +16,19 @@ class ExampleTest extends TestCase
 
         $response->assertStatus(200);
     }
+
+    public function test_registration_redirects_to_the_home_page(): void
+    {
+        $response = $this->followingRedirects()->post('/register', [
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ]);
+
+        $response->assertOk();
+        $this->assertDatabaseHas('users', [
+            'email' => 'test@example.com',
+        ]);
+    }
 }
