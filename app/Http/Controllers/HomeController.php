@@ -2,27 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Category;
+use App\Models\Product;
+use Illuminate\Contracts\Support\Renderable;
 
 class HomeController extends Controller
 {
     /**
-     * Create a new controller instance.
-     *
-     * @return void
+     * Show the application landing page / dashboard.
      */
-    public function __construct()
+    public function index(): Renderable
     {
-        $this->middleware('auth');
-    }
+        $categories = Category::withCount('products')->get();
+        $bestSellers = Product::with('category')->where('is_best_seller', true)->take(8)->get();
+        $newArrivals = Product::with('category')->where('is_new_arrival', true)->latest()->take(8)->get();
+        $hotDeals = Product::with('category')->where('is_hot_deal', true)->take(8)->get();
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function index()
-    {
-        return view('home');
+        return view('home', compact('categories', 'bestSellers', 'newArrivals', 'hotDeals'));
     }
 }
