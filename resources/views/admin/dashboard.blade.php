@@ -8,7 +8,7 @@
         <p class="text-uppercase text-primary fw-semibold small mb-1">Store overview</p>
         <h1 class="h2 fw-bold mb-0">Admin dashboard</h1>
     </div>
-    <span class="text-muted">Signed in as {{ auth('admin')->user()->name }}</span>
+    <span class="text-muted">Signed in as {{ auth('myadmin')->user()->name }}</span>
 </div>
 
 <div class="row g-3 mb-4">

@@ -128,7 +128,7 @@ class ProductController extends Controller
             StockAdjustment::create([
                 'product_id' => $lockedProduct->id,
                 'product_name' => $lockedProduct->name,
-                'admin_id' => auth('admin')->id(),
+                'admin_id' => auth('myadmin')->id(),
                 'direction' => $validated['direction'],
                 'quantity' => $quantity,
                 'stock_before' => $stockBefore,

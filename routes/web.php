@@ -34,7 +34,7 @@ Route::get('/new-arrivals', [ProductCatalogController::class, 'newArrivals'])->n
 Route::get('/products/{product}', [ProductCatalogController::class, 'show'])->name('products.show');
 Route::get('/category/{category}', [CategoryProductsController::class, 'show'])->name('categories.show');
 
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('myadmin')->name('admin.')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'create'])->name('login');
     Route::post('/login', [AdminAuthController::class, 'store'])->middleware('throttle:3,1')->name('login.store');
 

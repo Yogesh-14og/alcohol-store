@@ -48,12 +48,12 @@
             <div class="dropdown ms-auto">
                 <button class="admin-profile-toggle btn btn-outline-light dropdown-toggle" type="button" id="adminProfileMenu" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-person-circle me-sm-1" aria-hidden="true"></i>
-                    <span>{{ auth('admin')->user()->name }}</span>
+                    <span>{{ auth('myadmin')->user()->name }}</span>
                 </button>
                 <div class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="adminProfileMenu">
                     <div class="px-3 py-2">
-                        <div class="fw-semibold">{{ auth('admin')->user()->name }}</div>
-                        <small class="text-muted">{{ auth('admin')->user()->email }}</small>
+                        <div class="fw-semibold">{{ auth('myadmin')->user()->name }}</div>
+                        <small class="text-muted">{{ auth('myadmin')->user()->email }}</small>
                     </div>
                     <hr class="dropdown-divider">
                     <button class="dropdown-item" type="button" data-admin-theme-toggle>

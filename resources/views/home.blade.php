@@ -15,7 +15,6 @@
 
             <!-- Left: Text Content -->
             <div class="hero-text">
-                <p class="storefront-kicker"><i class="bi bi-stars me-2" aria-hidden="true"></i>KATHMANDU'S BOTTLE SHOP</p>
                 <h1 class="hero-title">
                     Premium Drinks<br>
                     <span class="text-warning-custom">Delivered Fast.</span>
@@ -31,11 +30,6 @@
                     <a href="#offers" class="btn btn-outline-light btn-lg px-4 fw-medium border-2">
                         Special Deals
                     </a>
-                </div>
-                <div class="storefront-trust mt-4">
-                    <span><i class="bi bi-check-circle me-1" aria-hidden="true"></i>Carefully selected</span>
-                    <span><i class="bi bi-truck me-1" aria-hidden="true"></i>Kathmandu delivery</span>
-                    <span><i class="bi bi-shield-check me-1" aria-hidden="true"></i>Secure checkout</span>
                 </div>
             </div>
 

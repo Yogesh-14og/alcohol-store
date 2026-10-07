@@ -12,7 +12,7 @@ class AuthController extends Controller
 {
     public function create(): View|RedirectResponse
     {
-        if (Auth::guard('admin')->check()) {
+        if (Auth::guard('myadmin')->check()) {
             return redirect()->route('admin.dashboard');
         }
 
@@ -26,7 +26,7 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        if (! Auth::guard('admin')->attempt($credentials, $request->boolean('remember'))) {
+        if (! Auth::guard('myadmin')->attempt($credentials, $request->boolean('remember'))) {
             return back()
                 ->withErrors(['email' => 'The provided admin credentials are incorrect.'])
                 ->onlyInput('email');
@@ -39,7 +39,7 @@ class AuthController extends Controller
 
     public function destroy(Request $request): RedirectResponse
     {
-        Auth::guard('admin')->logout();
+        Auth::guard('myadmin')->logout();
         $request->session()->regenerateToken();
 
         return redirect()->route('admin.login');
